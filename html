@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latin America Map Quiz</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #eef5f9;
+        color: #17232b;
+    }
+
+    header {
+        background: #183b56;
+        color: white;
+        text-align: center;
+        padding: 18px;
+    }
+
+    header h1 {
+        margin: 0 0 6px;
+        font-size: 30px;
+    }
+
+    header p {
+        margin: 0;
+        opacity: .9;
+    }
+
+    .game {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 15px;
+    }
+
+    .stats {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+
+    .stat {
+        background: white;
+        border-radius: 12px;
+        padding: 10px 18px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.12);
+        font-weight: bold;
+    }
+
+    .question {
+        background: white;
+        border-radius: 15px;
+        padding: 16px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,.12);
+        margin-bottom: 15px;
+    }
+
+    #questionText {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .map {
+        position: relative;
+        width: 100%;
+        max-width: 1050px;
+        height: 650px;
+        margin: auto;
+        overflow: hidden;
+        border-radius: 18px;
+        background:
+            linear-gradient(135deg, #cdeef8, #9bd5e8);
+        border: 4px solid #183b56;
+        box-shadow: 0 4px 15px rgba(0,0,0,.18);
+    }
+
+    /* Land masses */
+    .land {
+        position: absolute;
+        background: #d8c28b;
+        border: 2px solid #927b45;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
+    }
+
+    .north-america {
+        width: 330px;
+        height: 230px;
+        left: 100px;
+        top: 50px;
+        border-radius: 45% 35% 45% 25%;
+        transform: rotate(10deg);
+    }
+
+    .central-america {
+        width: 170px;
+        height: 55px;
+        left: 310px;
+        top: 245px;
+        border-radius: 45%;
+        transform: rotate(25deg);
+    }
+
+    .south-america {
+        width: 285px;
+        height: 420px;
+        left: 440px;
+        top: 210px;
+        border-radius: 48% 55% 40% 50%;
+        transform: rotate(8deg);
+    }
+
+    .caribbean {
+        position: absolute;
+        width: 150px;
+        height: 80px;
+        left: 500px;
+        top: 185px;
+        background: rgba(85,175,205,.45);
+        border-radius: 50%;
+    }
+
+    /* Quiz buttons */
+    .place {
+        position: absolute;
+        z-index: 5;
+        border: 2px solid #31576b;
+        background: rgba(255,255,255,.92);
+        color: #152c38;
+        padding: 6px 9px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 12px;
+        cursor: pointer;
+        transition: .15s;
+        box-shadow: 0 2px 5px rgba(0,0,0,.15);
+    }
+
+    .place:hover {
+        transform: scale(1.08);
+        background: #fff;
+    }
+
+    .place.correct {
+        background: #63c174;
+        color: white;
+        border-color: #368c47;
+    }
+
+    .place.wrong {
+        background: #e85b5b;
+        color: white;
+        border-color: #a52d2d;
+    }
+
+    .ocean-label {
+        position: absolute;
+        z-index: 2;
+        color: #17617c;
+        font-weight: bold;
+        font-size: 16px;
+        opacity: .9;
+        pointer-events: none;
+    }
+
+    /* Positions */
+    #mexico { left: 235px; top: 190px; }
+    #guatemala { left: 300px; top: 250px; }
+    #elsalvador { left: 350px; top: 270px; }
+    #nicaragua { left: 365px; top: 295px; }
+    #costarica { left: 380px; top: 325px; }
+    #panama { left: 410px; top: 350px; }
+
+    #cuba { left: 505px; top: 210px; }
+    #haiti { left: 595px; top: 235px; }
+    #puertorico { left: 670px; top: 265px; }
+
+    #colombia { left: 475px; top: 365px; }
+    #venezuela { left: 555px; top: 350px; }
+    #ecuador { left: 450px; top: 430px; }
+    #peru { left: 480px; top: 475px; }
+    #bolivia { left: 555px; top: 480px; }
+    #brazil { left: 630px; top: 420px; }
+    #paraguay { left: 605px; top: 525px; }
+    #chile { left: 500px; top: 555px; }
+    #argentina { left: 550px; top: 575px; }
+    #uruguay { left: 675px; top: 555px; }
+
+    #pacific {
+        left: 30px;
+        top: 420px;
+    }
+
+    #atlantic {
+        right: 40px;
+        top: 450px;
+    }
+
+    #caribbeansea {
+        left: 565px;
+        top: 160px;
+    }
+
+    #gulf {
+        left: 400px;
+        top: 75px;
+    }
+
+    .message {
+        text-align: center;
+        min-height: 28px;
+        margin: 12px;
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .controls {
+        text-align: center;
+        margin: 15px;
+    }
+
+    button.control {
+        border: none;
+        background: #183b56;
+        color: white;
+        padding: 12px 22px;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: 4px;
+    }
+
+    button.control:hover {
+        background: #285a7c;
+    }
+
+    .instructions {
+        background: white;
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 15px 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.1);
+        line-height: 1.5;
+    }
+
+    @media(max-width:700px) {
+        .map {
+            height: 570px;
+            transform-origin: top left;
+        }
+
+        .place {
+            font-size: 9px;
+            padding: 4px 5px;
+        }
+
+        #questionText {
+            font-size: 19px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Latin America Map Quiz</h1>
+    <p>Click the place the question asks for</p>
+</header>
+
+<div class="game">
+
+    <div class="stats">
+        <div class="stat">Score: <span id="score">0</span></div>
+        <div class="stat">Question: <span id="number">1</span>/20</div>
+        <div class="stat">Streak: <span id="streak">0</span></div>
+    </div>
+
+    <div class="question">
+        <p id="questionText">Where is Mexico?</p>
+    </div>
+
+    <div class="map">
+
+        <!-- Land masses -->
+        <div class="land north-america"></div>
+        <div class="land central-america"></div>
+        <div class="land south-america"></div>
+        <div class="caribbean"></div>
+
+        <!-- Oceans -->
+        <div class="ocean-label" id="pacific">PACIFIC OCEAN</div>
+        <div class="ocean-label" id="atlantic">ATLANTIC OCEAN</div>
+        <div class="ocean-label" id="caribbeansea">CARIBBEAN SEA</div>
+        <div class="ocean-label" id="gulf">GULF OF MEXICO</div>
+
+        <!-- Clickable places -->
+        <button class="place" id="mexico" onclick="choose('Mexico')">Mexico</button>
+        <button class="place" id="guatemala" onclick="choose('Guatemala')">Guatemala</button>
+        <button class="place" id="elsalvador" onclick="choose('El Salvador')">El Salvador</button>
+        <button class="place" id="nicaragua" onclick="choose('Nicaragua')">Nicaragua</button>
+        <button class="place" id="costarica" onclick="choose('Costa Rica')">Costa Rica</button>
+        <button class="place" id="panama" onclick="choose('Panama')">Panama</button>
+
+        <button class="place" id="cuba" onclick="choose('Cuba')">Cuba</button>
+        <button class="place" id="haiti" onclick="choose('Haiti')">Haiti</button>
+        <button class="place" id="puertorico" onclick="choose('Puerto Rico')">Puerto Rico</button>
+
+        <button class="place" id="colombia" onclick="choose('Colombia')">Colombia</button>
+        <button class="place" id="venezuela" onclick="choose('Venezuela')">Venezuela</button>
+        <button class="place" id="peru" onclick="choose('Peru')">Peru</button>
+        <button class="place" id="bolivia" onclick="choose('Bolivia')">Bolivia</button>
+        <button class="place" id="brazil" onclick="choose('Brazil')">Brazil</button>
+        <button class="place" id="chile" onclick="choose('Chile')">Chile</button>
+        <button class="place" id="argentina" onclick="choose('Argentina')">Argentina</button>
+        <button class="place" id="uruguay" onclick="choose('Uruguay')">Uruguay</button>
+
+        <!-- Extra map locations from the actual geography -->
+        <button class="place" id="ecuador"
+                style="left:440px;top:430px"
+                onclick="choose('Ecuador')">Ecuador</button>
+
+        <button class="place" id="paraguay"
+                style="left:605px;top:525px"
+                onclick="choose('Paraguay')">Paraguay</button>
+
+        <!-- Clickable ocean/region answers -->
+        <button class="place"
+                style="left:20px;top:455px"
+                onclick="choose('Pacific Ocean')">Pacific Ocean</button>
+
+        <button class="place"
+                style="right:25px;top:485px"
+                onclick="choose('Atlantic Ocean')">Atlantic Ocean</button>
+
+        <button class="place"
+                style="left:550px;top:125px"
+                onclick="choose('Caribbean Sea')">Caribbean Sea</button>
+
+        <button class="place"
+                style="left:365px;top:45px"
+                onclick="choose('Gulf of Mexico / America')">
+            Gulf of Mexico / America
+        </button>
+
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <div class="controls">
+        <button class="control" onclick="restart()">Restart Quiz</button>
+    </div>
+
+    <div class="instructions">
+        <b>How to play:</b><br>
+        Read the place at the top, then click where you think it is on the map.
+        You get <b>100 points</b> for a correct answer.
+        Try to get all 20!
+    </div>
+
+</div>
+
+<script>
+
+const places = [
+    "Argentina",
+    "Atlantic Ocean",
+    "Bolivia",
+    "Brazil",
+    "Caribbean Sea",
+    "Chile",
+    "Colombia",
+    "Costa Rica",
+    "Cuba",
+    "El Salvador",
+    "Guatemala",
+    "Gulf of Mexico / America",
+    "Haiti",
+    "Mexico",
+    "Nicaragua",
+    "Pacific Ocean",
+    "Panama",
+    "Peru",
+    "Puerto Rico",
+    "Uruguay",
+    "Venezuela"
+];
+
+let questions = [];
+let current = 0;
+let score = 0;
+let streak = 0;
+let locked = false;
+
+/* Shuffle array */
+function shuffle(array) {
+    return [...array].sort(() => Math.random() - 0.5);
+}
+
+/* Start game */
+function startGame() {
+    questions = shuffle(places).slice(0, 20);
+    current = 0;
+    score = 0;
+    streak = 0;
+    locked = false;
+
+    document.getElementById("score").textContent = score;
+    document.getElementById("streak").textContent = streak;
+
+    showQuestion();
+}
+
+/* Show question */
+function showQuestion() {
+
+    if (current >= questions.length) {
+        finishGame();
+        return;
+    }
+
+    locked = false;
+
+    document.getElementById("number").textContent = current + 1;
+
+    document.getElementById("questionText").textContent =
+        "Where is " + questions[current] + "?";
+
+    document.getElementById("message").textContent = "";
+
+    document.querySelectorAll(".place").forEach(button => {
+        button.classList.remove("correct", "wrong");
+        button.disabled = false;
+    });
+}
+
+/* Player clicks an answer */
+function choose(answer) {
+
+    if (locked) return;
+
+    locked = true;
+
+    const correct = questions[current];
+
+    if (answer === correct) {
+
+        score += 100;
+        streak++;
+
+        document.getElementById("score").textContent = score;
+        document.getElementById("streak").textContent = streak;
+
+        document.getElementById("message").textContent =
+            "Correct! +100 points";
+
+        document.getElementById(answerId(answer)).classList.add("correct");
+
+    } else {
+
+        streak = 0;
+
+        document.getElementById("streak").textContent = streak;
+
+        document.getElementById("message").textContent =
+            "Not quite! The correct answer is " + correct;
+
+        document.getElementById(answerId(answer)).classList.add("wrong");
+        document.getElementById(answerId(correct)).classList.add("correct");
+    }
+
+    document.querySelectorAll(".place").forEach(button => {
+        button.disabled = true;
+    });
+
+    setTimeout(() => {
+        current++;
+        showQuestion();
+    }, 1200);
+}
+
+/* Convert answer name into its button ID */
+function answerId(answer) {
+
+    const ids = {
+        "Mexico": "mexico",
+        "Guatemala": "guatemala",
+        "El Salvador": "elsalvador",
+        "Nicaragua": "nicaragua",
+        "Costa Rica": "costarica",
+        "Panama": "panama",
+        "Cuba": "cuba",
+        "Haiti": "haiti",
+        "Puerto Rico": "puertorico",
+        "Colombia": "colombia",
+        "Venezuela": "venezuela",
+        "Peru": "peru",
+        "Bolivia": "bolivia",
+        "Brazil": "brazil",
+        "Chile": "chile",
+        "Argentina": "argentina",
+        "Uruguay": "uruguay",
+        "Ecuador": "ecuador",
+        "Paraguay": "paraguay"
+    };
+
+    if (ids[answer]) return ids[answer];
+
+    /* Oceans and Gulf use text matching */
+    const buttons = document.querySelectorAll(".place");
+
+    for (const button of buttons) {
+        if (button.textContent.trim() === answer) {
+            return button.id || button.textContent.trim();
+        }
+    }
+
+    return "";
+}
+
+/* Finish */
+function finishGame() {
+
+    document.getElementById("questionText").textContent =
+        "QUIZ COMPLETE!";
+
+    document.getElementById("message").innerHTML =
+        "You scored <b>" + score + " / 2000</b>!";
+
+    document.querySelectorAll(".place").forEach(button => {
+        button.disabled = true;
+    });
+}
+
+/* Restart */
+function restart() {
+    startGame();
+}
+
+startGame();
+
+</script>
+
+</body>
+</html>
